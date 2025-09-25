@@ -1,18 +1,23 @@
-st.title('제목')
+### st.title('제목')  
+
 이 코드는 웹 페이지의 제목을 설정합니다.  
+
 st.title() 함수는 가장 큰 글씨로 제목을 표시하며, 페이지 상단에 나타납니다.
 
-st.session_state
+### st.session_state  
+
 **st.session_state**는 Streamlit 애플리케이션의 세션 상태를 관리하는 특별한 객체입니다. 
 Streamlit은 사용자가 웹 페이지를 새로고침하거나 위젯을 조작할 때마다 스크립트 전체를 위에서부터 아래로 다시 실행합니다. 이 때문에 변수에 저장된 값들은 리프레시될 때마다 초기화됩니다.
 
-st.session_state는 이러한 초기화를 방지하고, 사용자 세션 동안 값을 유지할 수 있도록 해줍니다.
+- st.session_state는 이러한 초기화를 방지하고, 사용자 세션 동안 값을 유지할 수 있도록 해줍니다.
 
-st.session_state는 딕셔너리와 유사하게 작동합니다.
+- st.session_state는 딕셔너리와 유사하게 작동합니다.
 
-if "messages" not in st.session_state:: "messages"라는 키가 세션 상태에 존재하지 않으면(즉, 앱이 처음 실행될 때),
+- if "messages" not in st.session_state:: "messages"라는 키가 세션 상태에 존재하지 않으면(즉, 앱이 처음 실행될 때),
 
-st.session_state.messages = []: 빈 리스트를 생성하여 st.session_state에 messages라는 키로 저장합니다. 이 리스트는 사용자와 AI의 대화 기록을 담는 역할을 합니다.
+st.session_state.messages = []: 빈 리스트를 생성하여 st.session_state에 messages라는 키로 저장합니다. 
+
+이 리스트는 사용자와 AI의 대화 기록을 담는 역할을 합니다.
 
 채팅 기록 표시 및 사용자 입력 처리
 for message in st.session_state.messages:: messages 리스트에 저장된 이전 대화 기록을 반복해서 가져와 화면에 표시합니다.
