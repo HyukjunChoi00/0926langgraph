@@ -11,7 +11,7 @@ st.write('''# 1 제목
 ''')
 
 with st.expander("expander 달기"):
-    st.write('컨테이너 내용')
+    st.write('내용')
     st.write('''
     # 보고서
     ## 요약
