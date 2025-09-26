@@ -35,6 +35,18 @@ llm = ChatGoogleGenerativeAI(
     max_retries=2,
 )
 
+
+##### 각 문법 설명 #####
+
+# TypedDict : 더 엄격한 타입 검사, 타입 힌트 제공
+# Annotated : 타입 힌트에 메타데이터를 추가  예) Annotated[Type, metadata1, metadata2, ...]
+# Annotated : LangGraph에서는 Annotated를 사용하여 특별한 동작을 정의
+# add_messages : 메시지를 리스트에 추가
+
+##################################################################
+
+# 상태 정의
+
 class State(TypedDict):
     query: str
     messages: Annotated[list, add_messages]
@@ -42,6 +54,10 @@ class State(TypedDict):
     expanded_keywords: list[str]
     search_results: list[dict]
     answer: str
+
+##################################################################
+
+# 키워드 추출 함수 (아직 노드로 정의하진 않았고, chain을 만들어둠)
 
 def build_keyword_extraction_chain():
     prompt_template = ChatPromptTemplate.from_messages(
@@ -60,6 +76,9 @@ def build_keyword_extraction_chain():
     
     return prompt_template | llm
 
+##################################################################
+
+# 쿼리 확장 함수 (chain)
 
 def build_query_expansion_chain():
     prompt_template = ChatPromptTemplate.from_messages(
@@ -79,6 +98,14 @@ def build_query_expansion_chain():
     
     return prompt_template | llm
 
+##################################################################
+
+# LLM을 이용한 답변 생성
+# 아래 코드 중 state.get("search_results ... )를 통해, 이전 노드에 저장된 반환값인 search_results 값을 가져올 수 있음.
+# 가져온 값을 context라는 변수에 저장
+# context를 prompt에 삽입
+# 즉, LLM이 context를 보고 답을 할 수 있음.
+# 답변을 markdown 방식으로 수행하여, 이후 Streamlit에서 볼 답변이 더 구조도 있게 보이도록
 
 def generate_response(state):
     context = state.get("search_results", "")
@@ -94,6 +121,7 @@ def generate_response(state):
     return {"messages": [*messages, response],
             "answer": response.content}
 
+##################################################################
 
 def parse_json_response(response) -> dict:
     """JSON 응답을 파싱하는 간단한 함수"""
@@ -118,6 +146,9 @@ def parse_json_response(response) -> dict:
     except json.JSONDecodeError:
         return {"extracted_keyword": "", "expanded_search_query_list": []}
 
+##################################################### 노드 생성 #################################################################
+
+# 키워드 추출
 
 def extract_keyword(state):
     """핵심 키워드 추출 노드"""
@@ -133,6 +164,7 @@ def extract_keyword(state):
     
     return {"extracted_keyword": extracted_keyword}
 
+##################################################################
 
 def query_expansion(state):
     """쿼리 확장 노드"""
@@ -150,6 +182,12 @@ def query_expansion(state):
     
     return {"expanded_keywords": all_keywords}
 
+#################################################################
+
+# 검색 노드
+# 확장된 키워드 목록을 받고
+# 각 키워드에 대한 검색을 수행
+# 이후 결과값을 all_results에 정리 후, search results로 반환환
 
 async def search_news(state):
     """뉴스 검색 노드"""
@@ -279,6 +317,9 @@ async def scrape_articles_with_content(query: str, max_articles: int = 3) -> str
                 
     except Exception as e:
         return f"스크래핑 중 오류 발생: {str(e)}"
+
+
+####################################################### 워크플로우 구성 #################################################################
 
 
 # 워크플로우 구성
