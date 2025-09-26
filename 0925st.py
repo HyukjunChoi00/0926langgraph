@@ -193,7 +193,7 @@ async def search_news(state):
     """뉴스 검색 노드"""
     print(f"📰 뉴스 검색 중...")
     
-    expanded_keywords = state.get("expanded_keywords", [])
+    expanded_keywords = state.get("expanded_keywords", [])  # 키가 없으면 기본값인 빈 리스트 [] 반환. KeyError 방지.
     all_results = []
     for query in expanded_keywords:
         results = await scrape_articles_with_content(query)
@@ -341,11 +341,21 @@ workflow.add_edge("generate_response", END)
 # 그래프 컴파일
 graph = workflow.compile()
 
+#############################################################
+
+# LangGraph의 astream() 메서드를 사용하여 비동기적으로 그래프를 실행하고 결과를 스트리밍
 
 async def async_stream(query):
     # 비동기 스트리밍 함수
     async for event in graph.astream({"query": query}, debug=True):
         yield event
+
+
+# async_stream이라는 비동기 제너레이터를 실행하고 그 결과를 모아서 반환하는 역할
+# syncio.new_event_loop()를 호출하여 새로운 asyncio 이벤트 루프를 생성
+# Streamlit과 같이 이미 실행 중인 이벤트 루프가 있는 환경에서 asyncio.run()을 직접 사용했을 때 발생하는 RuntimeError를 피하기 위한 방법
+# async def gather_events(): 비동기 제너레이터 gen을 반복적으로 실행하여 모든 이벤트를 events 리스트에 수집하는 역할
+
 
 def run_async_stream(query):
     # Streamlit 동기 함수에서 비동기 제너레이터를 동기적으로 실행하는 헬퍼
