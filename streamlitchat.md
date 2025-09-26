@@ -31,7 +31,7 @@ if prompt := st.chat_input("무엇을 도와드릴까요?"):: 바다코끼리 �
 
 st.session_state.messages.append(...): 사용자가 메시지를 입력하면, 해당 메시지를 st.session_state.messages 리스트에 추가하여 대화 기록을 업데이트합니다.
 
-with st.spinner("생각 중..."):: LLM이 응답을 생성하는 동안 "생각 중..."이라는 로딩 메시지를 표시하여 사용자에게 기다려달라는 신호를 줍니다.
+with st.spinner("생각 중..."): LLM이 응답을 생성하는 동안 "생각 중..."이라는 로딩 메시지를 표시하여 사용자에게 기다려달라는 신호를 줍니다.
 
 response = llm_chain.invoke(...): LangChain의 LLMChain을 사용하여 사용자의 질문(prompt)을 LLM에게 전달하고 응답을 받습니다.
 
